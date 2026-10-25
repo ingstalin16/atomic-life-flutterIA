@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "579619143907",
+    "project_id": "atomiclife-habitos",
+    "storage_bucket": "atomiclife-habitos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579619143907:android:85d1f67013b87019dc45d6",
+        "android_client_info": {
+          "package_name": "com.example.atomic_life"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBS1WTIh9_NsLIZCknzNIlVRqGSyUeLGwg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
