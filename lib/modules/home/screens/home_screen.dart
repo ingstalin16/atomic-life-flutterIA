@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../auth/controllers/auth_controller.dart';
+import '../../habits/screens/habit_catalog_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -27,30 +28,54 @@ class HomeScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Center(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.spa, size: 85, color: Color(0xFF2E7D64)),
+
                 const SizedBox(height: 24),
+
                 const Text(
                   '¡Bienvenido a AtomicLife!',
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
+
                 const SizedBox(height: 16),
+
                 Obx(
                   () => Text(
                     authController.currentUser?.email ?? '',
                     textAlign: TextAlign.center,
                   ),
                 ),
+
                 const SizedBox(height: 24),
+
                 const Text(
                   'Tu transformación comienza con '
                   'un pequeño hábito cada día.',
                   textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 30),
+
+                // Boton para explorar el catalogo
+                FilledButton.icon(
+                  onPressed: () {
+                    Get.to(() => const HabitCatalogScreen());
+                  },
+                  icon: const Icon(Icons.explore_outlined),
+                  label: const Text('Explorar hábitos saludables'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E7D64),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
