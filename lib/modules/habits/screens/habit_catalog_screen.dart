@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../data/models/habit_template_model.dart';
 import '../controllers/habit_templates_controller.dart';
+import 'habit_form_screen.dart';
 
 class HabitCatalogScreen extends StatelessWidget {
   const HabitCatalogScreen({super.key});
@@ -18,6 +19,7 @@ class HabitCatalogScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            // Campo de búsqueda
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
@@ -104,6 +106,7 @@ class HabitCatalogScreen extends StatelessWidget {
                             habit: habit,
                             onTap: () {
                               controller.selectTemplate(habit);
+
                               Get.to(
                                 () => HabitTemplateDetailScreen(habit: habit),
                               );
@@ -122,6 +125,7 @@ class HabitCatalogScreen extends StatelessWidget {
   }
 }
 
+// Tarjeta para mostrar cada hábito del catálogo
 class _HabitCard extends StatelessWidget {
   final HabitTemplate habit;
   final VoidCallback onTap;
@@ -169,6 +173,7 @@ class _HabitCard extends StatelessWidget {
   }
 }
 
+// Widget reutilizable para mensajes de estado
 class _MessageState extends StatelessWidget {
   final IconData icon;
   final String message;
@@ -204,7 +209,7 @@ class _MessageState extends StatelessWidget {
   }
 }
 
-// Pantalla para visualizar las cuatro leyes
+// Pantalla de detalle del hábito y las cuatro leyes
 class HabitTemplateDetailScreen extends StatelessWidget {
   final HabitTemplate habit;
 
@@ -219,34 +224,46 @@ class HabitTemplateDetailScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           children: [
             const Icon(Icons.spa, size: 70, color: Color(0xFF2E7D64)),
+
             const SizedBox(height: 16),
+
             Text(
               habit.name,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
+
             const SizedBox(height: 8),
+
             Text(habit.category, textAlign: TextAlign.center),
+
             const SizedBox(height: 24),
 
+            // Primera ley
             _LawCard(
               number: '1',
               title: 'Hacerlo obvio',
               description: habit.context,
               icon: Icons.visibility_outlined,
             ),
+
+            // Segunda ley
             _LawCard(
               number: '2',
               title: 'Hacerlo atractivo',
               description: habit.motivation,
               icon: Icons.favorite_outline,
             ),
+
+            // Tercera ley
             _LawCard(
               number: '3',
               title: 'Hacerlo sencillo',
               description: habit.microAction,
               icon: Icons.directions_walk,
             ),
+
+            // Cuarta ley
             const _LawCard(
               number: '4',
               title: 'Hacerlo satisfactorio',
@@ -258,6 +275,7 @@ class HabitTemplateDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            // Identidad del hábito
             Card(
               color: const Color(0xFFE0F2E9),
               child: Padding(
@@ -277,16 +295,43 @@ class HabitTemplateDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
+            // Información de planificación
             Text('Duración: ${habit.durationMinutes} minutos'),
             Text('Hora sugerida: ${habit.scheduledTime}'),
 
             const SizedBox(height: 24),
 
+            // Botón para personalizar y crear un hábito
+            FilledButton.icon(
+              onPressed: () async {
+                final created = await Get.to<bool>(
+                  () => HabitFormScreen(template: habit),
+                );
+
+                // Si el formulario guardó el hábito,
+                // regresamos al catálogo.
+                if (created == true && context.mounted) {
+                  Get.back(result: true);
+                }
+              },
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text('Usar este hábito'),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF2E7D64),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             const Text(
-              'En el siguiente paso podrás personalizar '
-              'este ejemplo y guardarlo como tu propio hábito.',
+              'Puedes personalizar el nombre, '
+              'la duración, el horario y los días '
+              'antes de guardar este hábito.',
               textAlign: TextAlign.center,
             ),
+
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -294,6 +339,7 @@ class HabitTemplateDetailScreen extends StatelessWidget {
   }
 }
 
+// Tarjeta reutilizable para las cuatro leyes
 class _LawCard extends StatelessWidget {
   final String number;
   final String title;
@@ -320,7 +366,9 @@ class _LawCard extends StatelessWidget {
               backgroundColor: const Color(0xFFE0F2E9),
               child: Icon(icon, color: const Color(0xFF2E7D64)),
             ),
+
             const SizedBox(width: 12),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

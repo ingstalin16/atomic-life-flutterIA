@@ -3,23 +3,52 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 
 import 'firebase_options.dart';
+
+// Controlador de autenticación
 import 'modules/auth/controllers/auth_controller.dart';
+
+// Pantallas de autenticación
 import 'modules/auth/screens/login_screen.dart';
 import 'modules/auth/screens/recover_profile_screen.dart';
+
+// Pantalla principal
 import 'modules/home/screens/home_screen.dart';
 
+// Servicio de notificaciones
+import 'data/services/notification_service.dart';
+
 Future<void> main() async {
+  // Inicializar Flutter
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar Firebase
+  // ==========================================
+  // 1. INICIALIZAR FIREBASE
+  // ==========================================
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Registrar controlador de autenticacion con GetX
+  // ==========================================
+  // 2. INICIALIZAR NOTIFICACIONES LOCALES
+  // ==========================================
+
+  await NotificationService.instance.initialize();
+
+  // ==========================================
+  // 3. REGISTRAR CONTROLADOR GETX
+  // ==========================================
+
   Get.put(AuthController(), permanent: true);
 
-  // Iniciar AtomicLife
+  // ==========================================
+  // 4. INICIAR ATOMICLIFE
+  // ==========================================
+
   runApp(const AtomicLifeApp());
 }
+
+// ==============================================
+// APLICACIÓN PRINCIPAL
+// ==============================================
 
 class AtomicLifeApp extends StatelessWidget {
   const AtomicLifeApp({super.key});
@@ -30,56 +59,83 @@ class AtomicLifeApp extends StatelessWidget {
 
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'AtomicLife',
 
-      // Tema visual de la aplicacion
+      // ========================================
+      // TEMA VISUAL
+      // ========================================
       theme: ThemeData(
         useMaterial3: true,
+
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D64)),
+
         scaffoldBackgroundColor: const Color(0xFFF7FAF8),
+
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
 
-      // Gestion centralizada del acceso con GetX
+      // ========================================
+      // GESTIÓN DE AUTENTICACIÓN CON GETX
+      // ========================================
       home: Obx(() {
         final status = authController.authStatus.value;
 
         switch (status) {
-          // 1. Verificando autenticacion
+          // ====================================
+          // 1. VERIFICANDO AUTENTICACIÓN
+          // ====================================
+
           case AuthStatus.checking:
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
 
-          // 2. Usuario sin sesion
+          // ====================================
+          // 2. USUARIO SIN SESIÓN
+          // ====================================
+
           case AuthStatus.unauthenticated:
             return const LoginScreen();
 
-          // 3. Usuario con perfil validado
+          // ====================================
+          // 3. USUARIO AUTENTICADO
+          // ====================================
+
           case AuthStatus.authenticated:
             return const HomeScreen();
 
-          // 4. Perfil incompleto en Firestore
+          // ====================================
+          // 4. PERFIL INCOMPLETO
+          // ====================================
+
           case AuthStatus.incompleteProfile:
             return const RecoverProfileScreen();
 
-          // 5. Error de autenticacion o verificacion
+          // ====================================
+          // 5. ERROR DE AUTENTICACIÓN
+          // ====================================
+
           case AuthStatus.error:
             return Scaffold(
               appBar: AppBar(
-                title: const Text('Verificacion de cuenta'),
+                title: const Text('Verificación de cuenta'),
                 centerTitle: true,
               ),
+
               body: SafeArea(
                 child: Center(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(24),
+
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 420),
+
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+
                         children: [
                           const Icon(
                             Icons.error_outline,
@@ -100,6 +156,7 @@ class AtomicLifeApp extends StatelessWidget {
 
                           const SizedBox(height: 16),
 
+                          // Mostrar error de autenticación
                           Obx(
                             () => Text(
                               authController.errorMessage.value,
@@ -109,20 +166,22 @@ class AtomicLifeApp extends StatelessWidget {
 
                           const SizedBox(height: 28),
 
-                          // Reintentar la validacion del perfil
+                          // Reintentar validación del perfil
                           Obx(
                             () => FilledButton.icon(
                               onPressed: authController.isLoading.value
                                   ? null
                                   : authController.retryValidation,
+
                               icon: const Icon(Icons.refresh),
+
                               label: const Text('Reintentar'),
                             ),
                           ),
 
                           const SizedBox(height: 12),
 
-                          // Cerrar sesion
+                          // Cerrar sesión
                           Obx(
                             () => TextButton.icon(
                               onPressed: authController.isLoading.value
@@ -130,8 +189,10 @@ class AtomicLifeApp extends StatelessWidget {
                                   : () async {
                                       await authController.logout();
                                     },
+
                               icon: const Icon(Icons.logout),
-                              label: const Text('Cerrar sesion'),
+
+                              label: const Text('Cerrar sesión'),
                             ),
                           ),
                         ],
